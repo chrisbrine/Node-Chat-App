@@ -1,0 +1,43 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#messages_box {
+  padding: 10px;
+  border: 2px solid black;
+  height: calc(95vh - 24px);
+  width: calc(100vw - 24px);
+}
+
+#messages span {
+  color: green;
+}
+
+#messages span.otherUser {
+  color: red;
+}
+
+#messages .fromAdmin {
+  color: red;
+}
+
+#createMessage {
+  height: calc(5vh);
+  width: calc(100vw);
+  display: flex;
+  align-items: center;
+}
+
+#createMessage input {
+  height: 4.6vh;
+  flex-grow: 1;
+  border: 0px;
+  outline: none;
+  font-size: 4vh;
+}
+
+#createMessage button {
+  height: 100%;
+  width: 75px;
+}
