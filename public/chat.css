@@ -10,7 +10,7 @@
   width: calc(100vw - 24px);
 }
 
-#messages span {
+#messages span.thisUser {
   color: green;
 }
 
@@ -20,6 +20,15 @@
 
 #messages .fromAdmin {
   color: red;
+}
+
+#messages a {
+  color: blue;
+}
+
+#messages .geolocation a {
+  color: darkgrey;
+  font-style: italic;
 }
 
 #createMessage {
@@ -40,4 +49,8 @@
 #createMessage button {
   height: 100%;
   width: 75px;
+}
+
+#createMessage button.hidden {
+  display: none;
 }

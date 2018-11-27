@@ -5,7 +5,7 @@ const express   = require('express');
 const socketIO  = require('socket.io');
 
 // Include local libraries
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocationMessage } = require('./utils/message');
 
 // Setup directory path variable
 const publicPath = path.join(__dirname, '../public');
@@ -40,6 +40,10 @@ io.on('connection', (socket) => {
   socket.on('createMessage', (message, callback) => {
     io.emit('newMessage', generateMessage(message.from, message.text));
     callback('data: ' + message.text);
+  });
+
+  socket.on('createLocationMessage', (coords) => {
+    io.emit('newLocationMessage', generateLocationMessage(coords.from, coords.latitude, coords.longitude));
   });
 
   socket.on('disconnect', () => {
