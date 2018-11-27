@@ -4,6 +4,9 @@ const http      = require('http');
 const express   = require('express');
 const socketIO  = require('socket.io');
 
+// Include local libraries
+const { generateMessage } = require('./utils/message');
+
 // Setup directory path variable
 const publicPath = path.join(__dirname, '../public');
 
@@ -16,35 +19,33 @@ const io      = socketIO(server);
 // Setup the public path directory for serving the frontend website
 app.use(express.static(publicPath));
 
+// Default settings
+const adminUser = 'Admin';
+
 // Start SocketIO
 
 io.on('connection', (socket) => {
+  socket.user = { name: 'Guest' };
 
   socket.on('newUser', (user) => {
     socket.user = user;
 
-    socket.emit('fromAdmin', {
-      text: 'Welcome to chat!',
-    });
+    socket.emit('newMessage', generateMessage(adminUser, 'Welcome to the chat!'));
 
-    socket.broadcast.emit('fromAdmin', {
-      text: `${user.name} has joined the chat.`,
-    });
+    socket.broadcast.emit('newMessage', generateMessage(adminUser, `${user.name} has joined the chat.`));
 
     console.log(`${user.name} has joined the chat.`);
   });
 
-  socket.on('createMessage', (message) => {
-    io.emit('newMessage', message);
-    console.log('createMessage', message);
+  socket.on('createMessage', (message, callback) => {
+    io.emit('newMessage', generateMessage(message.from, message.text));
+    callback('data: ' + message.text);
   });
 
   socket.on('disconnect', () => {
-    socket.broadcast.emit('fromAdmin', {
-      text: `${socket.user.name} has left the chat.`,
-    });
+    socket.broadcast.emit('newMessage', generateMessage(adminUser, `${socket.user.name} has left the chat.`));
 
-    console.log(`${socket.user.name} has joined the chat.`);
+    console.log(`${socket.user.name} has left the chat.`);
   });
 });
 

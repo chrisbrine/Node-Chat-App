@@ -1,5 +1,6 @@
 const socket = io();
 const userName = prompt('Please enter your name', '');
+const adminUser = 'Admin';
 
 socket.on('connect', function () {
   console.log('Connected to server');
@@ -19,24 +20,18 @@ socket.on('newMessage', function (message) {
   const name = document.createTextNode(message.from + ': ');
   const newMessageDOM = document.createElement('p');
   const newMessage = document.createTextNode(message.text);
-  nameDOM.appendChild(name);
-  if (message.from !== userName) {
-    nameDOM.classList.add('otherUser');
+  if (message.from !== adminUser) {
+    nameDOM.appendChild(name);
+    if (message.from !== userName) {
+      nameDOM.classList.add('otherUser');
+    }
+    newMessageDOM.appendChild(nameDOM);
+  } else {
+    newMessageDOM.classList.add('fromAdmin');
   }
-  newMessageDOM.appendChild(nameDOM);
   newMessageDOM.appendChild(newMessage);
   messages.appendChild(newMessageDOM);
-  console.log('newMessage', message);
 });
-
-socket.on('fromAdmin', function (message) {
-  const messages = document.getElementById('messages');
-  const newMessageDOM = document.createElement('p');
-  const newMessage = document.createTextNode(message.text);
-  newMessageDOM.classList.add('fromAdmin');
-  newMessageDOM.appendChild(newMessage);
-  messages.appendChild(newMessageDOM);
-  console.log('newMessage', message);});
 
 function createMessage(e) {
   const newMessage = document.getElementById('newMessage');
@@ -48,5 +43,7 @@ function createMessage(e) {
     from: userName,
     text: message,
     createdAt: new Date().getTime(),
+  }, (data) => {
+    console.log('Got it!', data);
   });
 }

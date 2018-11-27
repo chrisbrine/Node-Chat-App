@@ -15,7 +15,7 @@
 }
 
 #messages span.otherUser {
-  color: red;
+  color: purple;
 }
 
 #messages .fromAdmin {
