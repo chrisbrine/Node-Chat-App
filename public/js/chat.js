@@ -1,5 +1,7 @@
 const socket = io();
 
+let userName;
+let userInfo;
 let onlineUsers = [];
 
 function checkScroll() {
@@ -17,19 +19,25 @@ function checkScroll() {
   }
 }
 
-// function validUserName(userName) {
-//   return ((userName.trim()) && (userName.trim() !== adminUser));
-// }
-
-// while (!validUserName(userName)) {
-//   userName = prompt('Please enter your name', '');
-// }
+function getUrlVars() {
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+  });
+  return vars;
+}
 
 socket.on('connect', function () {
-  socket.emit('newUser', {
-    name: userName,
+  const params = getUrlVars();
+
+  socket.emit('join', params, function (err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+
+    }
   });
-  console.log('Connected to server');
 });
 
 socket.on('disconnect', function () {
@@ -37,7 +45,7 @@ socket.on('disconnect', function () {
   console.log('Disconnected from server');
 });
 
-socket.on('refreshUsers', function (users) {
+socket.on('updateUserList', function (users) {
   onlineUsers = users;
   refreshUsers();
 });
@@ -76,7 +84,6 @@ function createMessage() {
 
   if (message) {
     socket.emit('createMessage', {
-      from: userName,
       text: message,
       createdAt: new Date().getTime(),
     }, function () {
@@ -102,7 +109,6 @@ function sendLocation() {
   geoLocationButton.innerHTML = 'Sending...';
   navigator.geolocation.getCurrentPosition(function (position) {
     socket.emit('createLocationMessage', {
-      from: userName,
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
     }, function () {

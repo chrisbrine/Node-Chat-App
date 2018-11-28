@@ -126,6 +126,10 @@ button:disabled {
   -webkit-overflow-scrolling: touch;
 }
 
+.chat__messages a {
+  color: blue;
+}
+
 .chat__footer {
   background: #e6eaee;
   display: flex;
