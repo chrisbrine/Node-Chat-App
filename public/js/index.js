@@ -7,7 +7,17 @@ let onlineUsers = [];
 
 function checkScroll() {
   const messages = document.getElementById('messages');
-  messages.scrollTop = messages.scrollHeight;
+  const newMessage = messages.lastElementChild;
+  const previousMessage = newMessage.previousElementSibling;
+  const clientHeight = messages.clientHeight;
+  const scrollTop = messages.scrollTop;
+  const scrollHeight = messages.scrollHeight;
+  const newMessageHeight = newMessage.offsetHeight;
+  const lastMessageHeight = previousMessage ? previousMessage.offsetHeight : 0;
+
+  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+    messages.scrollTop = scrollHeight;
+  }
 }
 
 function validUserName(userName) {
@@ -46,6 +56,7 @@ socket.on('newMessage', function (message) {
 
   const messages = document.getElementById('messages');
   messages.innerHTML += html;
+  checkScroll();
 });
 
 socket.on('newLocationMessage', function (message) {
@@ -59,19 +70,22 @@ socket.on('newLocationMessage', function (message) {
 
   const messages = document.getElementById('messages');
   messages.innerHTML += html;
+  checkScroll();
 });
 
 function createMessage() {
   const newMessage = document.getElementById('newMessage');
-  const message = newMessage.value;
+  const message = newMessage.value.trim();
 
-  socket.emit('createMessage', {
-    from: userName,
-    text: message,
-    createdAt: new Date().getTime(),
-  }, function () {
-    newMessage.value = '';
-  });
+  if (message) {
+    socket.emit('createMessage', {
+      from: userName,
+      text: message,
+      createdAt: new Date().getTime(),
+    }, function () {
+      newMessage.value = '';
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
