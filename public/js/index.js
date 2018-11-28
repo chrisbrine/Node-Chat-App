@@ -35,31 +35,30 @@ socket.on('refreshUsers', function (users) {
   refreshUsers();
 });
 
-function addMessage (date, from, text) {
-  const formattedTime = moment(date).format('h:mm a');
-  const messages = document.getElementById('messages');
-  const newMessageDOM = document.createElement('li');
-
-  let chatMessage;
-  if (from !== adminUser) {
-    chatMessage = `[${formattedTime}] ${from}: ${text}`;
-  } else {
-    chatMessage = `[${formattedTime}] ${text}`;
-  }
-
-  newMessageDOM.innerHTML = chatMessage;
-  messages.appendChild(newMessageDOM);
-  checkScroll();
-}
-
 socket.on('newMessage', function (message) {
-  console.log(message);
-  addMessage(message.createdAt, message.from, message.text);
+  const createdAt = moment(message.createdAt).format('h:mm a');
+  const template = document.getElementById('message-template');
+  const html = Mustache.render(template.innerHTML, {
+    text: message.text,
+    from: message.from,
+    createdAt,
+  });
+
+  const messages = document.getElementById('messages');
+  messages.innerHTML += html;
 });
 
 socket.on('newLocationMessage', function (message) {
-  const msgUrl = `<a href='${message.url}' target='_blank'>My Current Location</a>`;
-  addMessage(message.createdAt, message.from, msgUrl);
+  const createdAt = moment(message.createdAt).format('h:mm a');
+  const template = document.getElementById('location-message-template');
+  const html = Mustache.render(template.innerHTML, {
+    url: message.url,
+    from: message.from,
+    createdAt,
+  });
+
+  const messages = document.getElementById('messages');
+  messages.innerHTML += html;
 });
 
 function createMessage() {
