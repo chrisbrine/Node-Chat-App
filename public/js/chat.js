@@ -1,7 +1,4 @@
 const socket = io();
-const adminUser = 'Admin';
-
-let userName = prompt('Please enter your name', '');
 
 let onlineUsers = [];
 
@@ -20,13 +17,13 @@ function checkScroll() {
   }
 }
 
-function validUserName(userName) {
-  return ((userName.trim()) && (userName.trim() !== adminUser));
-}
+// function validUserName(userName) {
+//   return ((userName.trim()) && (userName.trim() !== adminUser));
+// }
 
-while (!validUserName(userName)) {
-  userName = prompt('Please enter your name', '');
-}
+// while (!validUserName(userName)) {
+//   userName = prompt('Please enter your name', '');
+// }
 
 socket.on('connect', function () {
   socket.emit('newUser', {
