@@ -35,40 +35,31 @@ socket.on('refreshUsers', function (users) {
   refreshUsers();
 });
 
-socket.on('newMessage', function (message) {
+function addMessage (date, from, text) {
+  const formattedTime = moment(date).format('h:mm a');
   const messages = document.getElementById('messages');
-  const nameDOM = document.createElement('span');
-  const name = document.createTextNode(message.from + ': ');
   const newMessageDOM = document.createElement('li');
-  const newMessage = document.createTextNode(message.text);
-  if (message.from !== adminUser) {
-    nameDOM.appendChild(name);
-    if (message.from !== userName) {
-      nameDOM.classList.add('otherUser');
-    } else {
-      nameDOM.classList.add('thisUser');
-    }
-    newMessageDOM.appendChild(nameDOM);
+
+  let chatMessage;
+  if (from !== adminUser) {
+    chatMessage = `[${formattedTime}] ${from}: ${text}`;
   } else {
-    newMessageDOM.classList.add('fromAdmin');
+    chatMessage = `[${formattedTime}] ${text}`;
   }
-  newMessageDOM.appendChild(newMessage);
+
+  newMessageDOM.innerHTML = chatMessage;
   messages.appendChild(newMessageDOM);
   checkScroll();
+}
+
+socket.on('newMessage', function (message) {
+  console.log(message);
+  addMessage(message.createdAt, message.from, message.text);
 });
 
 socket.on('newLocationMessage', function (message) {
-  const messages = document.getElementById('messages');
-  const name = document.createTextNode(`${message.from} shared their current location. Click here for it.`);
-  const newMessageDOM = document.createElement('li');
-  const newMessage = document.createElement('a');
-  newMessage.href = message.url;
-  newMessage.target = '_blank';
-  newMessage.appendChild(name);
-  newMessageDOM.appendChild(newMessage);
-  newMessageDOM.classList.add('geolocation');
-  messages.appendChild(newMessageDOM);
-  checkScroll();
+  const msgUrl = `<a href='${message.url}' target='_blank'>My Current Location</a>`;
+  addMessage(message.createdAt, message.from, msgUrl);
 });
 
 function createMessage() {

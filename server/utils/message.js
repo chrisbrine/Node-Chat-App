@@ -1,3 +1,4 @@
+const moment = require('moment');
 
 const generateMessage = (from, text) => {
   return {
@@ -5,7 +6,7 @@ const generateMessage = (from, text) => {
     text: text.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
        return '&#'+i.charCodeAt(0)+';';
     }),
-    createdAt: new Date().getTime(),
+    createdAt: moment().valueOf(),
   };
 };
 
@@ -14,7 +15,7 @@ const generateLocationMessage = (from, latitude, longitude) => {
   return {
     from,
     url,
-    createdAt: new Date().getTime(),
+    createdAt: moment().valueOf(),
   }
 };
 
