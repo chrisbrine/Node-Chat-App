@@ -46,8 +46,15 @@ socket.on('disconnect', function () {
 });
 
 socket.on('updateUserList', function (users) {
-  onlineUsers = users;
-  refreshUsers();
+  const userListDOM = document.getElementById('users');
+  let usersHTML = '';
+  for (let index = 0; index < users.length; index++) {
+    const template = document.getElementById('user-template');
+    usersHTML += Mustache.render(template.innerHTML, {
+      name: users[index],
+    });
+  }
+  userListDOM.innerHTML = usersHTML;
 });
 
 socket.on('newMessage', function (message) {
@@ -120,18 +127,4 @@ function sendLocation() {
     geoLocationButton.disabled = false;
     alert('Failed to get geolocation to share.');
   });
-}
-
-function refreshUsers() {
-  const userListDOM = document.getElementById('users');
-  const userList = document.createElement('ul');
-  userList.classList.add('usersList');
-  for (let index = 0; index < onlineUsers.length; index++) {
-    const user = document.createElement('li');
-    const theUser = document.createTextNode(onlineUsers[index]);
-    user.appendChild(theUser);
-    userList.appendChild(user);
-  }
-  users.innerHTML = '';
-  users.appendChild(userList);
 }
