@@ -21,6 +21,7 @@ app.use(express.static(publicPath));
 
 // Default settings
 const adminUser = 'Admin';
+let users = [];
 
 // Start SocketIO
 
@@ -29,6 +30,9 @@ io.on('connection', (socket) => {
 
   socket.on('newUser', (user) => {
     socket.user = user;
+
+    users.push(user.name);
+    io.emit('refreshUsers', users);
 
     socket.emit('newMessage', generateMessage(adminUser, 'Welcome to the chat!'));
 
@@ -39,15 +43,20 @@ io.on('connection', (socket) => {
 
   socket.on('createMessage', (message, callback) => {
     io.emit('newMessage', generateMessage(message.from, message.text));
-    callback('data: ' + message.text);
+    callback();
   });
 
-  socket.on('createLocationMessage', (coords) => {
+  socket.on('createLocationMessage', (coords, callback) => {
     io.emit('newLocationMessage', generateLocationMessage(coords.from, coords.latitude, coords.longitude));
+    callback();
   });
 
   socket.on('disconnect', () => {
     socket.broadcast.emit('newMessage', generateMessage(adminUser, `${socket.user.name} has left the chat.`));
+
+    users = users.splice(users.indexOf(socket.user.name), 1);
+
+    io.emit('refreshUsers', users);
 
     console.log(`${socket.user.name} has left the chat.`);
   });
